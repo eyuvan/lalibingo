@@ -1,0 +1,242 @@
+:root {
+    --bg-dark: #121824;
+    --card-bg: #1e2640;
+    --primary-orange: #ff7619;
+    --primary-blue: #1fa2ff;
+    --primary-yellow: #ffd200;
+    --primary-green: #00cd6c;
+    --primary-pink: #ff527b;
+    --text-light: #ffffff;
+    --text-muted: #8fa0c4;
+    --accent-gold: #ffbe1a;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0; padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* TOP STATUS BAR */
+.top-bar {
+    background-color: #0b0f19;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    font-weight: bold;
+    font-size: 13px;
+    border-bottom: 2px solid #1a2238;
+    z-index: 10;
+}
+.top-item {
+    background: #161e33;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #232f4e;
+}
+.id-timer-section {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: #25133a !important;
+    border-color: #492075 !important;
+}
+#countdown-timer { color: #ff4747; }
+
+.live-stats {
+    display: flex;
+    gap: 8px;
+    position: absolute;
+    left: 16px;
+    top: 55px;
+    z-index: 5;
+}
+.highlight-blue { border-color: var(--primary-blue); color: var(--primary-blue); }
+.highlight-gold { border-color: var(--accent-gold); color: var(--accent-gold); }
+
+/* MAIN FRAME AREA */
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    padding-bottom: 80px;
+}
+.tab-view { display: none; height: 100%; }
+.tab-view.active { display: block; }
+
+/* 🌟 1-600 በትንሹ ከፍ ያለ እና ለዓይን ግልጽ የሆነ የግሪድ አቀማመጥ */
+.selection-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr); /* በአንድ መስመር 8 ሳጥኖች */
+    gap: 4px;
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+    padding: 3px;
+}
+.card-box {
+    background-color: var(--card-bg);
+    border: 1px solid #2d395e;
+    border-radius: 4px;
+    padding: 6px 2px; /* የውስጥ ክፍተቱ ለዓይን ምቹ እንዲሆን ጨምሯል */
+    text-align: center;
+    font-size: 11px; /* የቁጥሮቹ መጠን ጎልቷል */
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.card-box.selected {
+    background-color: var(--primary-orange);
+    color: #000;
+    border-color: #fff;
+}
+
+/* GAMEPLAY SCOREBOARD SECTION */
+.gameplay-top {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 12px;
+    background: #171f35;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 40px;
+    margin-bottom: 16px;
+}
+.called-number-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #090d16;
+    border-radius: 8px;
+    border: 2px solid #33436b;
+}
+#called-ball-display {
+    font-size: 26px;
+    font-weight: 900;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.called-ball-empty { background: #222; color: #555; border: 2px dashed #444; }
+
+.bingo-board-container { display: flex; flex-direction: column; }
+.bingo-header-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    text-align: center;
+    font-weight: 900;
+    font-size: 14px;
+    padding-bottom: 4px;
+}
+.b-col-h { color: var(--primary-orange); }
+.i-col-h { color: var(--primary-blue); }
+.n-col-h { color: var(--primary-yellow); }
+.g-col-h { color: var(--primary-green); }
+.o-col-h { color: var(--primary-pink); }
+
+.bingo-columns-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    background: #0f1524;
+    border-radius: 6px;
+    padding: 4px;
+    gap: 3px;
+}
+.board-column { display: flex; flex-direction: column; gap: 2px; }
+.board-num-cell {
+    font-size: 9px;
+    font-weight: bold;
+    text-align: center;
+    background: #1a233a;
+    padding: 2px 0;
+    color: #4f6385;
+}
+.board-num-cell.hit-B { background: var(--primary-orange) !important; color: #000 !important; }
+.board-num-cell.hit-I { background: var(--primary-blue) !important; color: #000 !important; }
+.board-num-cell.hit-N { background: var(--primary-yellow) !important; color: #000 !important; }
+.board-num-cell.hit-G { background: var(--primary-green) !important; color: #000 !important; }
+.board-num-cell.hit-O { background: var(--primary-pink) !important; color: #000 !important; }
+
+/* 🌟 የተመረጡት 3ቱ ካርቴላዎች ማይክሮ አቀማመጥ (Horizontal Micro 5x5) */
+.player-cards-container { 
+    display: flex; 
+    gap: 2px;
+    overflow-x: auto; 
+    padding-bottom: 4px; 
+    justify-content: center;
+}
+.mini-card { 
+    background: #1b2238; 
+    border: 1px solid #2e3b5e; 
+    border-radius: 3px; 
+    padding: 1px;
+    min-width: 78px;
+    max-width: 90px;
+    flex: 1; 
+}
+.card-title-header { 
+    text-align: center; 
+    font-size: 6.5px; 
+    color: var(--accent-gold); 
+    margin-bottom: 2px; 
+    font-weight: bold; 
+}
+.grid-5x5 { 
+    display: grid; 
+    grid-template-columns: repeat(5, 1fr); 
+    gap: 0.5px;
+}
+.cell-5x5 {
+    background: #101626; 
+    aspect-ratio: 1; 
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    font-size: 6.5px;
+    font-weight: 900; 
+    color: #d1dcff;
+    border-radius: 1px;
+}
+.cell-5x5.free-space { background: #2c3a5e; color: var(--accent-gold); font-size: 4px; }
+.cell-5x5.marked { background: #00cd6c !important; color: #000 !important; }
+
+/* PANELS AND TABS CONFIGURATIONS */
+.wallet-card, .profile-card { background: var(--card-bg); border: 1px solid #2a375b; border-radius: 12px; padding: 16px; margin: 16px 0; }
+.wallet-card { display: flex; justify-content: space-around; text-align: center; }
+.wallet-balance h3 { color: var(--primary-orange); font-size: 20px; }
+.transaction-list, .history-list { display: flex; flex-direction: column; gap: 10px; }
+.trx-item, .history-game-item { background: #171f34; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; font-size: 14px; }
+.trx-item.deposit .trx-amt { color: var(--primary-green); }
+.trx-item.withdraw .trx-amt { color: #ff4747; }
+.profile-avatar { font-size: 35px; color: var(--primary-blue); background: #131a2e; padding: 12px; border-radius: 50%; }
+
+.sound-btn {
+    background: #131a2e; border: 1px solid #ff4747; color: #fff; 
+    padding: 6px 12px; border-radius: 6px; margin-left: 8px; cursor: pointer;
+}
+
+/* NAVIGATION CONTROL STRIP */
+.nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0b0f19; border-top: 2px solid #1a2238; display: grid; grid-template-columns: repeat(4, 1fr); padding: 8px 0; z-index: 100; }
+.nav-item { background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+.nav-item.active { color: var(--primary-orange); }
+
+/* POPUP CONFIGURATIONS */
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 8, 15, 0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.modal-content { background: #1c253e; border: 3px solid var(--accent-gold); border-radius: 16px; padding: 30px 24px; text-align: center; width: 85%; max-width: 330px; }
+.winner-username { font-size: 20px; font-weight: bold; color: var(--primary-green); margin: 10px 0; }
+.hidden { display: none !important; }
+.animate-pop { animation: popIn 0.3s ease; }
+@keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
