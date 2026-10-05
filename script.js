@@ -4,10 +4,11 @@ let gameLoopId = null;
 let currentGameId = 1;
 let selectedCards = [];
 let calledNumbers = [];
-let isMuted = true; // የሴት ድምፅ በራሱ ጠፍቷል (Profile ውስጥ ማብራት ይቻላል)
+let isMuted = true; 
 
 const cardPool = {};
 
+// አፕሊኬሽኑ ሲከፈት በራስ-ሰር ሁሉንም በትክክል ማስነሻ
 document.addEventListener("DOMContentLoaded", () => {
     generateCardSelectionGrid();
     generateScoreboardGrid();
@@ -15,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     startCountdown();
 });
 
-// 1. የ 1-600 ካርቴላ መምረጫ ሳጥኖችን በንጹሕ ቁጥሮች ማመንጨት
+// 1. የ 1-600 ካርቴላ ምርጫ ማሳያ ማመንጫ
 function generateCardSelectionGrid() {
     const grid = document.getElementById("cards-grid");
     if (!grid) return;
@@ -29,7 +30,7 @@ function generateCardSelectionGrid() {
     }
 }
 
-// 2. የ 1-75 የቢንጎ ማስተር ቦርድ ሰሌዳ ማመንጨት
+// 2. የ 1-75 የቢንጎ ማስተር ሰሌዳ ማመንጫ
 function generateScoreboardGrid() {
     const ranges = [
         { id: "board-b", start: 1, end: 15 },
@@ -73,7 +74,7 @@ function createBingoMatrix() {
             matrix[r][c] = columns[c][r];
         }
     }
-    matrix[2][2] = "FREE"; // መሃል ሳጥን FREE ናት
+    matrix[2][2] = "FREE"; 
     return matrix;
 }
 
@@ -91,42 +92,47 @@ function selectCard(num, element) {
         element.classList.remove("selected");
         selectedCards = selectedCards.filter(id => id !== num);
     } else {
-        if (selectedCards.length >= 3) return; // ማክሲመም 3 ካርቴላ ብቻ
+        if (selectedCards.length >= 3) return; 
         element.classList.add("selected");
         selectedCards.push(num);
     }
 }
 
-// 3. መደበኛ የ 49 ሰከንድ መቁጠሪያ ታይመር
+// 3. የ 49 ሰከንድ መቁጠሪያ ታይመር
 function startCountdown() {
     countdownTime = 49;
-    document.getElementById("timer-sec").innerText = countdownTime;
+    const timerText = document.getElementById("timer-sec");
+    if (timerText) timerText.innerText = countdownTime;
     
     if (timerId) clearInterval(timerId);
     
     timerId = setInterval(() => {
         countdownTime--;
-        document.getElementById("timer-sec").innerText = countdownTime;
+        if (timerText) timerText.innerText = countdownTime;
         if (countdownTime <= 0) {
             clearInterval(timerId);
-            launchMatchPlay(); // 0 ሲሆን ጨዋታ ይጀምራል
+            launchMatchPlay(); 
         }
     }, 1000);
 }
 
-// 4. ጨዋታውን በይፋ ማስጀመር (0 ሰከንድ ሲሆን)
+// 4. ጨዋታ ማስጀመሪያ (0 ሰከንድ ሲሆን)
 function launchMatchPlay() {
-    // የላይኛውን ስታክ እና ዋሌት አለመደበቅ (ልክ እርስዎ ኤችቲኤምኤል ላይ እንዳለው ቋሚ ነው)
     document.getElementById("selection-screen").classList.add("hidden");
     document.getElementById("gameplay-screen").classList.remove("hidden");
     
     const gameIdField = document.getElementById("game-id-display");
-    gameIdField.innerText = `ID: ${String(currentGameId).padStart(4, '0')}`;
-    gameIdField.classList.remove("hidden");
+    if (gameIdField) {
+        gameIdField.innerText = `ID: ${String(currentGameId).padStart(4, '0')}`;
+        gameIdField.classList.remove("hidden");
+    }
     
-    document.getElementById("selected-count-top").innerText = selectedCards.length;
-    document.getElementById("derash-amount").innerText = selectedCards.length * 8;
-    document.getElementById("live-stats").classList.remove("hidden");
+    const liveStats = document.getElementById("live-stats");
+    if (liveStats) {
+        document.getElementById("selected-count-top").innerText = selectedCards.length;
+        document.getElementById("derash-amount").innerText = selectedCards.length * 8;
+        liveStats.classList.remove("hidden");
+    }
     
     renderSelectedCardsOnScreen();
     calledNumbers = [];
@@ -172,7 +178,7 @@ function renderSelectedCardsOnScreen() {
     });
 }
 
-// 5. የቢንጎ ቁጥሮችን በየ 4 ሰከንዱ የመጥራት ዑደት
+// 5. የቢንጎ ቁጥሮችን በየ 4 ሰከንዱ መጥሪያ
 function startCallingNumbersLoop() {
     let pool75 = Array.from({ length: 75 }, (_, i) => i + 1).sort(() => Math.random() - 0.5);
     
@@ -207,7 +213,6 @@ function startCallingNumbersLoop() {
         
         if (!isMuted) { announceNumberSpeech(letter + " " + ball); }
 
-        // አውቶማቲክ አሸናፊ መፈለግ
         let winnerCardId = checkRealBingoWinner();
         if (winnerCardId) { 
             clearInterval(gameLoopId);
@@ -249,34 +254,40 @@ function triggerWinnerSequence(cardId) {
     document.getElementById("winner-tg-name").innerText = `ካርቴላ #${cardId} አሸንፏል!`;
     document.getElementById("winner-modal").classList.remove("hidden");
     
-    // 🌟 ልክ በ 4 ሰከንድ ውስጥ በግዴታ ወደ ኋላ 1-600 መመለሻ ዑደት
+    // ልክ በ 4 ሰከንድ ውስጥ በግዴታ ወደ ኋላ የመመለሻ ዑደት
     setTimeout(() => { resetAndRestartLobbyLoop(); }, 4000);
 }
 
-// 6. ጨዋታው አልቆ ወደ መጀመሪያው የካርቴላ ምርጫ ገጽ በግዴታ መመለሻ
 function resetAndRestartLobbyLoop() {
     document.getElementById("winner-modal").classList.add("hidden");
-    document.getElementById("live-stats").classList.add("hidden");
-    document.getElementById("game-id-display").classList.add("hidden");
+    
+    const liveStats = document.getElementById("live-stats");
+    if (liveStats) liveStats.classList.add("hidden");
+    
+    const gameIdField = document.getElementById("game-id-display");
+    if (gameIdField) gameIdField.classList.add("hidden");
     
     selectedCards = []; 
     calledNumbers = []; 
     currentGameId++;
     
     document.querySelectorAll(".board-num-cell").forEach(cell => cell.className = "board-num-cell");
-    document.getElementById("called-ball-display").className = "called-ball-empty";
-    document.getElementById("called-ball-display").innerText = "-";
+    const displayBox = document.getElementById("called-ball-display");
+    if (displayBox) {
+        displayBox.className = "called-ball-empty";
+        displayBox.innerText = "-";
+    }
     
     generateCardSelectionGrid();
     document.getElementById("gameplay-screen").classList.add("hidden");
-    document.getElementById("selection-screen").classList.remove("hidden"); // 👈 ቀጥታ ወደ 1-600 ይመለሳል
+    document.getElementById("selection-screen").classList.remove("hidden");
     
     startCountdown();
 }
 
-// 7. የታችኛው የናቪጌሽን ባር ገጽ መቀያየሪያ (ሙሉ በሙሉ የተከፈተ)
+// 3. የታችኛው የናቪጌሽን ባር ገጽ መቀያየሪያ
 window.switchTab = function(tabId, navBtn) {
     document.querySelectorAll(".tab-view").forEach(tab => tab.classList.remove("active"));
     document.querySelectorAll(".nav-item").forEach(btn => btn.classList.remove("active"));
     
-    document.getElementById(tabId).classList.add("active");
+    const targetTab = document.getElementById(tabId);
